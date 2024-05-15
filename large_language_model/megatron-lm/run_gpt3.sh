@@ -1,12 +1,16 @@
 #!/bin/bash
 
-#SBATCH --reservation=all_nodes --job-name mlperf-megatron --output=logs/slurm-%x.%j.out
-#SBATCH --time=00:30:00 --ntasks-per-node=4
+#SBATCH --job-name mlperf-megatron
+#SBATCH --output=logs/slurm-%x.%j.out
+#SBATCH --time=00:30:00
+#SBATCH --nodes=16
+#SBATCH --ntasks-per-node=4
 ##SBATCH -p luna -A mlperf -t 00:20:00 --nodes=8 --exclusive --mem=0 --overcommit --ntasks-per-node=8 --job-name=mlperf-megatron:megatron
 
 # Execute via:
-# cd /iopsstor/scratch/cscs/stefschu/ml/mlcommons-training/large_language_model/megatron-lm
-# GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3.sh ./logs /mchstor2/scratch/cscs/lukasd/mlperf/data/megatron-lm/preprocessed_c4_spm none
+# GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3.sh logs /mchstor2/scratch/cscs/lukasd/mlperf/data/megatron-lm/preprocessed_c4_spm none
+
+set -x
 
 # Vars without defaults
 LOG_DIR=${1:?LOG_DIR not set}
@@ -30,7 +34,7 @@ export NCCL_DEBUG=INFO
 : "${LR:=2.0e-5}"
 : "${MIN_LR:=2.0e-6}"
 : "${EVAL_INTERVAL:=$(( (24576 + ${GBS} - 1) / ${GBS} ))}"
-: "${USE_BF16:=false}"  # set to false for FP32
+: "${USE_BF16:=true}"  # set to false for FP32
 : "${EXTERNAL_MODEL_CHECKPOINT_DIR:=}"
 : "${EXTERNAL_TRAINING_ITERATIONS:=4000}"
 : "${EXTERNAL_GBS:=1536}"
@@ -62,7 +66,7 @@ echo "setting exit duration to $EXIT_DURATION minutes"
 
 options=" \
 --exit-duration-in-mins ${EXIT_DURATION} \
---tensor-model-parallel-size 4 \
+--tensor-model-parallel-size 8 \
 --pipeline-model-parallel-size 8 \
 --sequence-parallel \
 --recompute-activations \
@@ -122,37 +126,21 @@ fi
 
 # Debugging (single rank, controlled by DEBUG_RANK, defaults to rank 0)
 if [ "${ENABLE_DEBUGGING:-0}" -eq 1 ]; then
-    echo "Enabling debugging..."
-    ENROOT_ENTRYPOINT="env/enroot-entrypoint.sh"
-    if [ "${DEBUG_RANK:-0}" -ge "$SLURM_NTASKS" ]; then
-        echo "DEBUG_RANK = ${DEBUG_RANK:-0} is not a valid rank (#ranks = $SLURM_NTASKS), exiting..."
-        exit 1
-    fi
+  echo "Enabling debugging..."
+  ENROOT_ENTRYPOINT="env/enroot-entrypoint.sh"
 else
-    ENROOT_ENTRYPOINT=""
+  ENROOT_ENTRYPOINT=""
 fi
 
 # Run
 # run_cmd="python -u ${MEGATRON_DIR}/pretrain_gpt.py ${options}"
 # run_cmd="WANDB_BASE_URL=... WANDB_API_KEY=... RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID python -u ./pretrain_gpt.py ${options}"
-run_cmd="RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID python \${DEBUG_CMD} ./pretrain_gpt.py ${options}"
+run_cmd="RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID python -u ./pretrain_gpt.py ${options}"
 DATETIME=`date +'date_%y-%m-%d_time_%H-%M-%S'`
 
 
-srun -ul --environment="$(realpath env/ngc-megatron-24.03.toml)" --output=$LOG_DIR/GPT3-175B-runlog-$SLURM_JOB_ID-$DATETIME.log ${ENROOT_ENTRYPOINT} sh -c " \
-      if [ "${ENABLE_DEBUGGING:-0}" -eq 1 ]; then
-          DEBUG_CMD=\"\"
-	      if [ \"\${SLURM_PROCID:-0}\" -eq ${DEBUG_RANK:-0} ]; then
-          #    echo \"Running training script with debugpy on \$(hostname)\"
-          #    DEBUG_CMD=\"-m debugpy --listen 5678 --wait-for-client\"
-		      mkdir -p ${SCRATCH}/.tmp
-              echo \"\$(hostname)\" > ${SCRATCH}/.tmp/debug-${SLURM_JOB_NAME}
-          fi
-	  else
-	      DEBUG_CMD=\"-u\"
-      fi
-      ${run_cmd}
-    "
+srun -ul --environment="$(realpath env/ngc-megatron-24.03.toml)" \
+  --output=$LOG_DIR/GPT3-175B-runlog-$SLURM_JOB_ID-$DATETIME.log ${ENROOT_ENTRYPOINT} sh -c "${run_cmd}"
 
 # srun -l \
 #      --container-image $CONT \
