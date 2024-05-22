@@ -40,7 +40,8 @@ then
     # MPICH options
     # is required for CUDA-aware MPI to work
     export MPICH_GPU_SUPPORT_ENABLED=1                                                                            
-    export MPICH_SMP_SINGLE_COPY_MODE=xpmem
+    # MPICH_GPU_SUPPORT_ENABLED=1 and MPICH_SMP_SINGLE_COPY_MODE=XPMEM are mutually exclusive, and MPICH will fall back to CMA if GPU support is enabled.
+    #export MPICH_SMP_SINGLE_COPY_MODE=xpmem
 else
     let lrank=$OMPI_COMM_WORLD_LOCAL_RANK
     let grank=$OMPI_COMM_WORLD_RANK
@@ -69,7 +70,7 @@ export CXX=`which g++`
 export CC=`which gcc`
 
 # would make the code print out a stacktrace in case of a crash - only works when compiled with -traceback compiler option
-export NVCOMPILER_TERM=trace                                                                                  
+#export NVCOMPILER_TERM=trace
 
 ## OpenACC options
 ## makes small H2D copies faster
@@ -79,12 +80,12 @@ export NVCOMPILER_TERM=trace
 #export NV_ACC_CUDA_MEMALLOCASYNC=1
 #export NV_ACC_CUDA_MEMALLOCASYNC_POOLSIZE=500000000000
 
-# is required to avoid hangs at scale
-export FI_MR_CACHE_MONITOR=disabled                                                                           
-export FI_CXI_SAFE_DEVMEM_COPY_THRESHOLD=0
-
-# speeds up (or rather recovers good performance) GPU direct communications over the network. Without it MPI takes 3-5x longer when G2G is enabled
-export FI_CXI_RX_MATCH_MODE=software
+## is required to avoid hangs at scale
+#export FI_MR_CACHE_MONITOR=disabled
+#export FI_CXI_SAFE_DEVMEM_COPY_THRESHOLD=0
+#
+## speeds up (or rather recovers good performance) GPU direct communications over the network. Without it MPI takes 3-5x longer when G2G is enabled
+#export FI_CXI_RX_MATCH_MODE=software
 
 # run the command
 "$@"
