@@ -53,7 +53,7 @@ def main():
     distributed = num_gpus > 1
 
     if distributed:
-        torch.cuda.set_device(args.local_rank)
+        torch.cuda.set_device(args.local_rank % torch.cuda.device_count())
         torch.distributed.init_process_group(
             backend="nccl", init_method="env://"
         )

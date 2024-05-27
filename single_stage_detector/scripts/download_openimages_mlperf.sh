@@ -60,6 +60,7 @@ MLPERF_CLASSES=('Airplane' 'Antelope' 'Apple' 'Backpack' 'Balloon' 'Banana'
   'Whale' 'Wheel' 'Wheelchair' 'Whiteboard' 'Window' 'Wine' 'Wine glass' 'Woman'
   'Zebra' 'Zucchini')
 
+cd "$(dirname "$0")"
 python fiftyone_openimages.py \
   --dataset-dir=${DATASET_PATH} \
   --output-labels="openimages-mlperf.json" \

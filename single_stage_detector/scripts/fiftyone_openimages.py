@@ -25,7 +25,8 @@ dataset = foz.load_zoo_dataset(
     splits=args.splits,
     label_types="detections",
     dataset_name="open-images",
-    dataset_dir=args.dataset_dir
+    dataset_dir=args.dataset_dir,
+    num_workers=144,
 )
 
 print("Converting dataset to coco format ...")

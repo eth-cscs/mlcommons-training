@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import os
 
 import open_clip
 from PIL import Image
@@ -20,7 +21,7 @@ class CLIPEncoder(nn.Module):
                 self.pretrained = 'openai'
 
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(self.clip_version,
-                                                                               pretrained=self.pretrained,
+                                                                               pretrained=os.path.join(cache_dir, "open_clip_pytorch_model.bin"), #self.pretrained,
                                                                                cache_dir=cache_dir)
 
         self.model.eval()

@@ -36,8 +36,8 @@ BATCHSIZE=${BATCHSIZE:-2}
 EVALBATCHSIZE=${EVALBATCHSIZE:-${BATCHSIZE}}
 NUMEPOCHS=${NUMEPOCHS:-30}
 LOG_INTERVAL=${LOG_INTERVAL:-20}
-DATASET_DIR=${DATASET_DIR:-"/datasets/open-images-v6-mlperf"}
-TORCH_HOME=${TORCH_HOME:-"$(pwd)/torch-model-cache"}
+DATASET_DIR=${DATASET_DIR:-"/mchstor2/scratch/cscs/lukasd/mlperf/data/single_stage_detector/open-images-v6-mlperf"}
+TORCH_HOME=${TORCH_HOME:-"/mchstor2/scratch/cscs/lukasd/mlperf/data/single_stage_detector/torch-model-cache"}
 
 # Handle MLCube parameters
 while [ $# -gt 0 ]; do
@@ -53,43 +53,15 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-
-# run benchmark
-echo "running benchmark"
-
-
-
-declare -a CMD
-if [ -n "${SLURM_LOCALID-}" ]; then
-    # Mode 1: Slurm launched a task for each GPU and set some envvars; no need for parallel launch
-    cluster=''
-    if [[ "${DGXSYSTEM}" == DGX2* ]]; then
-        cluster='circe'
-    fi
-    if [[ "${DGXSYSTEM}" == DGXA100* ]]; then
-        cluster='selene'
-    fi
-  if [ "${SLURM_NTASKS}" -gt "${SLURM_JOB_NUM_NODES}" ]; then
-    CMD=( './bind.sh' "--cluster=${cluster}" '--ib=single' '--' ${NSYSCMD} 'python' '-u' )
-  else
-    CMD=( 'python' '-u' )
-  fi
-else
-  # Mode 2: Single-node Docker; need to launch tasks with torchrun
-  CMD=( "torchrun" "--standalone" "--nnodes=1" "--nproc_per_node=1" )
-  [ "$MEMBIND" = false ] &&  CMD+=( "--no_membind" )
-fi
-
-PARAMS=(
-      --batch-size              "${BATCHSIZE}"
-      --eval-batch-size         "${EVALBATCHSIZE}"
-      --epochs                  "${NUMEPOCHS}"
-      --print-freq              "${LOG_INTERVAL}"
-      --data-path               "${DATASET_DIR}"
-)
-
 # run training
-"${CMD[@]}" train.py "${PARAMS[@]}" ${EXTRA_PARAMS} ; ret_code=$?
+python train.py \
+  --batch-size "${BATCHSIZE}" \
+  --eval-batch-size "${EVALBATCHSIZE}" \
+  --epochs "${NUMEPOCHS}" \
+  --print-freq "${LOG_INTERVAL}" \
+  --data-path "${DATASET_DIR}" \
+  --output-dir "${LOG_DIR}" \
+  ${EXTRA_PARAMS} ; ret_code=$?
 
 # Copy log file to MLCube log folder
 if [ "$LOG_DIR" != "" ]; then

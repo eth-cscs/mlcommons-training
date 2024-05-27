@@ -20,8 +20,8 @@ def evaluate(flags, model, loader, loss_fn, score_fn, device, epoch=0, is_distri
         model.load_state_dict(checkpoint['best_model_state_dict'])
         if is_distributed:
             model = torch.nn.parallel.DistributedDataParallel(model,
-                                                              device_ids=[flags.local_rank],
-                                                              output_device=flags.local_rank)
+                                                              device_ids=[flags.local_rank % torch.cuda.device_count()],
+                                                              output_device=flags.local_rank % torch.cuda.device_count())
 
     model.eval()
 

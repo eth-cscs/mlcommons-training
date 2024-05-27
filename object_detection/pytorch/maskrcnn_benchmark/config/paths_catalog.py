@@ -18,7 +18,7 @@ import os
 
 
 class DatasetCatalog(object):
-    DATA_DIR = "datasets"
+    DATA_DIR = os.environ.get("DATASET_CATALOG_DIR", "datasets")
     DATASETS = {
         "coco_2017_train": {
             "img_dir": "coco/train2017",

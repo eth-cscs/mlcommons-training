@@ -16,7 +16,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from warprnnt_pytorch import RNNTLoss as WarpRNNTLoss
+# from warprnnt_pytorch import RNNTLoss as WarpRNNTLoss
+from warp_rnnt import rnnt_loss
 
 
 class RNNTLoss(torch.nn.Module):
@@ -29,7 +30,8 @@ class RNNTLoss(torch.nn.Module):
 
     def __init__(self, blank_idx):
         super().__init__()
-        self.rnnt_loss = WarpRNNTLoss(blank=blank_idx)
+        # self.rnnt_loss = WarpRNNTLoss(blank=blank_idx)
+        self.blank_idx = blank_idx
         self.use_cuda = torch.cuda.is_available()
 
     def forward(self, logits, logit_lens, y, y_lens):
@@ -77,9 +79,16 @@ class RNNTLoss(torch.nn.Module):
             y = y.cuda()
             y_lens = y_lens.cuda()
 
-        loss = self.rnnt_loss(
-            acts=logits, labels=y, act_lens=logit_lens, label_lens=y_lens
-        )
+        # loss = self.rnnt_loss(
+        #     acts=logits, labels=y, act_lens=logit_lens, label_lens=y_lens
+        # )
+        loss = rnnt_loss(log_probs=logits,
+                         labels=y,
+                         frames_lengths=logit_lens,
+                         labels_lengths=y_lens,
+                         reduction='mean',
+                         blank=self.blank_idx)
+
 
         # del new variables that may have been created due to float/int/cuda()
         del logits, y, logit_lens, y_lens

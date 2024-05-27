@@ -23,6 +23,11 @@ from absl import flags
 from absl import logging
 import tensorflow as tf
 
+# tf.config.run_functions_eagerly(True)  # MultiWorkerMirroredStrategy across multiple nodes fails in graph mode
+# import os
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
+# tf.compat.v1.logging.set_verbosity(logging.DEBUG)
+
 from tf2_common.modeling import performance
 from tf2_common.training import controller
 from tf2_common.utils.flags import core as flags_core
@@ -111,6 +116,7 @@ def run(flags_obj):
   Returns:
     Dictionary of training and eval stats.
   """
+
   mlp_log.mlperf_print('cache_clear', True)
   mlp_log.mlperf_print('init_start', None)
   mlp_log.mlperf_print('submission_benchmark', 'resnet')

@@ -118,7 +118,7 @@ class ResnetRunnable(standard_runnable.StandardRunnableWithWarmup):
     if self.dtype == tf.float16:
       loss_scale = flags_core.get_loss_scale(flags_obj, default_for_fp16=128)
       self.optimizer = (
-          tf.keras.mixed_precision.experimental.LossScaleOptimizer(
+          tf.keras.mixed_precision.LossScaleOptimizer(
               self.optimizer, loss_scale))
     elif flags_obj.fp16_implementation == 'graph_rewrite':
       # `dtype` is still float32 in this case. We built the graph in float32

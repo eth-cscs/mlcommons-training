@@ -150,7 +150,7 @@ def main():
     # set up distributed training
     multi_gpu = not args.cpu and int(os.environ.get('WORLD_SIZE', 1)) > 1
     if multi_gpu:
-        torch.cuda.set_device(args.local_rank)
+        torch.cuda.set_device(args.local_rank % torch.cuda.device_count())
         distrib.init_process_group(backend='nccl', init_method='env://')
         print_once(f'Inference with {distrib.get_world_size()} GPUs')
 

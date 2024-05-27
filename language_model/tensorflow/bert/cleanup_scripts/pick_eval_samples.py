@@ -44,29 +44,29 @@ def decode_record(record):
   """Decodes a record to a TensorFlow example."""
   name_to_features = {
       "input_ids":
-          tf.FixedLenFeature([max_seq_length], tf.int64),
+          tf.io.FixedLenFeature([max_seq_length], tf.int64),
       "input_mask":
-          tf.FixedLenFeature([max_seq_length], tf.int64),
+          tf.io.FixedLenFeature([max_seq_length], tf.int64),
       "segment_ids":
-          tf.FixedLenFeature([max_seq_length], tf.int64),
+          tf.io.FixedLenFeature([max_seq_length], tf.int64),
       "masked_lm_positions":
-          tf.FixedLenFeature([max_predictions_per_seq], tf.int64),
+          tf.io.FixedLenFeature([max_predictions_per_seq], tf.int64),
       "masked_lm_ids":
-          tf.FixedLenFeature([max_predictions_per_seq], tf.int64),
+          tf.io.FixedLenFeature([max_predictions_per_seq], tf.int64),
       "masked_lm_weights":
-          tf.FixedLenFeature([max_predictions_per_seq], tf.float32),
+          tf.io.FixedLenFeature([max_predictions_per_seq], tf.float32),
       "next_sentence_labels":
-          tf.FixedLenFeature([1], tf.int64),
+          tf.io.FixedLenFeature([1], tf.int64),
   }
 
-  example = tf.parse_single_example(record, name_to_features)
+  example = tf.io.parse_single_example(record, name_to_features)
 
   # tf.Example only supports tf.int64, but the TPU only supports tf.int32.
   # So cast all int64 to int32.
   for name in list(example.keys()):
     t = example[name]
     if t.dtype == tf.int64:
-      t = tf.to_int32(t)
+      t = tf.compat.v1.to_int32(t)
     example[name] = t
 
   return example
@@ -84,7 +84,6 @@ def create_float_feature(values):
 
 if __name__ == '__main__':
   tic = time.time()
-  tf.enable_eager_execution()
 
   d = tf.data.TFRecordDataset(args.input_tfrecord)
   num_examples = 0
@@ -93,7 +92,7 @@ if __name__ == '__main__':
     records.append(record)
     num_examples += 1
 
-  writer = tf.python_io.TFRecordWriter(args.output_tfrecord)
+  writer = tf.compat.v1.python_io.TFRecordWriter(args.output_tfrecord)
   i = 0
   pick_ratio = num_examples / args.num_examples_to_pick
   num_examples_picked = 0

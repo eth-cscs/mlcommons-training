@@ -31,7 +31,7 @@ from tensorflow.python.ops import state_ops
 
 
 # class LARSOptimizer(optimizer_v2modified.OptimizerV2Modified):
-class LARSOptimizer(optimizer_v2.OptimizerV2):
+class LARSOptimizer(tf.keras.optimizers.legacy.Optimizer):  # optimizer_v2.OptimizerV2):
   """Layer-wise Adaptive Rate Scaling for large batch training.
 
   Introduced by "Large Batch Training of Convolutional Networks" by Y. You,

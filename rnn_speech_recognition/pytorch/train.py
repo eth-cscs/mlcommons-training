@@ -195,7 +195,7 @@ def main():
     # set up distributed training
     multi_gpu = int(os.environ.get('WORLD_SIZE', 1)) > 1
     if multi_gpu:
-        torch.cuda.set_device(args.local_rank)
+        torch.cuda.set_device(args.local_rank % torch.cuda.device_count())
         dist.init_process_group(backend='nccl', init_method='env://')
         world_size = dist.get_world_size()
         print_once(f'Distributed training with {world_size} GPUs\n')
@@ -299,7 +299,7 @@ def main():
     else:
         sampler = dali_sampler.SimpleSampler()
 
-    train_loader = DaliDataLoader(gpu_id=args.local_rank,
+    train_loader = DaliDataLoader(gpu_id=args.local_rank % torch.cuda.device_count(),
                                   dataset_path=args.dataset_dir,
                                   config_data=train_dataset_kw,
                                   config_features=train_features_kw,
@@ -311,7 +311,7 @@ def main():
                                   device_type=args.dali_device,
                                   tokenizer=tokenizer)
 
-    val_loader = DaliDataLoader(gpu_id=args.local_rank,
+    val_loader = DaliDataLoader(gpu_id=args.local_rank % torch.cuda.device_count(),
                                     dataset_path=args.dataset_dir,
                                     config_data=val_dataset_kw,
                                     config_features=val_features_kw,

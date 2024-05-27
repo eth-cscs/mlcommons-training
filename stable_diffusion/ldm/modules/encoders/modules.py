@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.checkpoint import checkpoint
 
+import os
 import open_clip
 
 
@@ -33,7 +34,11 @@ class FrozenOpenCLIPEmbedder(AbstractEncoder):
                  freeze=True, layer="last", cache_dir=None):
         super().__init__()
         assert layer in self.LAYERS
-        model, _, _ = open_clip.create_model_and_transforms(arch, device=torch.device('cpu'), pretrained=version, cache_dir=cache_dir)
+        # pretrained=version removed to load from filesystem
+        model, _, _ = open_clip.create_model_and_transforms(arch,
+                                                            device=torch.device('cpu'),
+                                                            pretrained=os.path.join(cache_dir, "open_clip_pytorch_model.bin"), #version,
+                                                            cache_dir=cache_dir)
         del model.visual
         self.model = model
 

@@ -8,8 +8,8 @@ import numpy as np
 
 def get_device(local_rank):
     if torch.cuda.is_available():
-        torch.cuda.set_device(local_rank % torch.cuda.device_count())
-        device = torch.device("cuda")
+        device = torch.device("cuda", local_rank % torch.cuda.device_count())
+        torch.cuda.set_device(device)
     else:
         device = torch.device("cpu")
     return device

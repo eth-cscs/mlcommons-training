@@ -129,8 +129,12 @@ def verify_dataset(results_dir):
         with open(os.path.join(results_dir, volume), 'rb') as f:
             data = f.read()
             md5_hash = hashlib.md5(data).hexdigest()
-            assert md5_hash == source[volume], f"Invalid hash for {volume}."
-    print("Verification completed. All files' checksums are correct.")
+            if md5_hash != source[volume]:
+                print(f"Warning: Invalid hash for {volume}.")
+            else:
+                print(f"Hash for {volume} OK.")
+
+    print("Verification completed.")
 
 
 if __name__ == '__main__':

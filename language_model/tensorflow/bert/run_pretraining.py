@@ -542,7 +542,7 @@ def main(_):
         allow_soft_placement=True)
 
     distribution_strategy = distribution_utils.get_distribution_strategy(
-        distribution_strategy="mirrored",
+        distribution_strategy="multi_worker_mirrored",
         num_gpus=FLAGS.num_gpus,
         all_reduce_alg="nccl",
         num_packs=0)

@@ -20,6 +20,7 @@ from __future__ import print_function
 
 from absl import flags
 import tensorflow as tf
+import backward_compatibility
 
 from tf2_common.utils.mlp_log import mlp_log
 from tensorflow.python.eager import context
@@ -143,9 +144,9 @@ class PolynomialDecayWithWarmup(
   def _get_learning_rate(self, step):
     with ops.name_scope_v2(self.name or 'PolynomialDecayWithWarmup') as name:
 
-      initial_learning_rate = ops.convert_to_tensor_v2(
+      initial_learning_rate = backward_compatibility.convert_to_tensor_v2(
           self.initial_learning_rate, name='initial_learning_rate')
-      warmup_steps = ops.convert_to_tensor_v2(
+      warmup_steps = backward_compatibility.convert_to_tensor_v2(
           self.warmup_steps, name='warmup_steps')
 
       warmup_rate = (

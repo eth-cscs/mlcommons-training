@@ -158,7 +158,7 @@ class OptimizerV2Modified(optimizer_v2.OptimizerV2):
       self._distributed_apply_org(distribution, grads_and_vars, name,
                                   apply_state)
 
-  @tf.function(experimental_compile=True)
+  @tf.function(jit_compile=True)
   def _distributed_apply_compile(self, distribution, grads_and_vars, name,
                                  apply_state):
     """This is a warpper, to return a tensor, making tf.func() happy."""
