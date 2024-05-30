@@ -1,5 +1,4 @@
-#image = "/bret/scratch/cscs/lukasd/images/nvcr.io.nvidia.pytorch+24.03-py3.sqsh"
-image = "/bret/scratch/cscs/lukasd/images/ngc-megatron+24.03.sqsh"
+image = "/bret/scratch/cscs/lukasd/images/ngc-recommendation_v2+24.03.sqsh"
 
 mounts = [
   "/bret:/bret",
@@ -13,20 +12,11 @@ mounts = [
 
 writable = true
 
-workdir = "/bret/scratch/cscs/lukasd/llm/training/large_language_model/megatron-lm"
-
-#[env]
-#TORCH_CPP_LOG_LEVEL = "INFO"
-#TORCH_DISTRIBUTED_DEBUG = "DETAIL"
-#NCCL_DEBUG = "DEBUG"
-#NCCL_ASYNC_ERROR_HANDLING = "1"
+workdir = "/bret/scratch/cscs/lukasd/llm/training/recommendation_v2/torchrec_dlrm"
 
 [annotations]
 com.hooks.aws_ofi_nccl.enabled = "true"
 com.hooks.aws_ofi_nccl.variant = "cuda12"
 
 [env]
-#NVIDIA_DISABLE_REQUIRE = "1"
-#ENROOT_CXI_HOOK = "1"
-#NCCL_NET_PLUGIN = "ofi"
 NCCL_DEBUG = "INFO"

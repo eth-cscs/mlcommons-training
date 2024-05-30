@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH --job-name unzip-criteo-clicklogs
+#SBATCH --time 24:00:00
+#SBATCH --nodes 1
+#SBATCH --ntasks-per-node 1
+#SBATCH --output logs/slurm-%x.%j.out
+
+mkdir -p logs
+
+DATA_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/recommendation"
+
+cd ${DATA_DIR}
+srun unzip criteo_terabyte-dataset-24-files_2023-04-28_0712.zip
