@@ -118,6 +118,7 @@ else
 fi
 
 srun -ul --environment="$(realpath env/ngc-rnn_speech_recognition-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c " \
+    hostname
     RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
     python train.py ${ARGS}
 "

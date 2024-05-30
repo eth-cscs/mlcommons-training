@@ -49,8 +49,9 @@ from mlperf_logging.mllog import constants
 from runtime.logging import mllog_event
 mllog_event(key=constants.CACHE_CLEAR, value=True)"
 
-  srun -u --environment="$(realpath env/ngc-image_segmentation-24.03.toml)" ${ENROOT_ENTRYPOINT} \
+  srun -ul --environment="$(realpath env/ngc-image_segmentation-24.03.toml)" ${ENROOT_ENTRYPOINT} \
 bash -c "\
+hostname
 CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
 RANK=\$SLURM_PROCID \
 WORLD_SIZE=\$SLURM_NTASKS \

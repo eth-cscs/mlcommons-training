@@ -23,6 +23,7 @@ fi
 
 set -x
 srun -ul --mpi=pmi2 --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" ${ENROOT_ENTRYPOINT} bash -c "
+  hostname
   unset http_proxy https_proxy && \
   CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
   TF_XLA_FLAGS='--tf_xla_auto_jit=2' \

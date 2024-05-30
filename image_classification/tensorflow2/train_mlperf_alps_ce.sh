@@ -22,6 +22,7 @@ else
 fi
 
 srun -ul --mpi=pmi2 --environment="$(realpath env/ngc-image_classification-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "
+hostname
 cd tensorflow2 && \
 unset http_proxy https_proxy && \
 CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
