@@ -389,7 +389,7 @@ def _evaluate(
     )
     iterator = itertools.chain(iterator, two_filler_batches)
 
-    auroc = metrics.AUROC(compute_on_step=False, task='binary').to(device)
+    auroc = metrics.AUROC(task='binary').to(device)
 
     with torch.no_grad():
         while True:
@@ -696,6 +696,7 @@ def main(argv: List[str]) -> None:
     else:
         device: torch.device = torch.device("cpu")
         backend = "gloo"
+
     dist.init_process_group(backend=backend)
 
     is_rank_zero = dist.get_rank() == 0

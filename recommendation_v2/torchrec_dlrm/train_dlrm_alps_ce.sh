@@ -1,9 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name mlperf-dlrm
 #SBATCH --time=02:00:00
-#SBATCH --nodes 2
+#SBATCH --nodes=256
 #SBATCH --ntasks-per-node=4
 #SBATCH --output=logs/slurm-%x.%j.out
+#SBATCH --error=logs/slurm-%x.%j.err
 
 
 # Create results directory
@@ -14,6 +15,7 @@ export MASTER_ADDR=$(hostname)
 export MASTER_PORT=29500
 export WORLD_SIZE=$SLURM_NTASKS
 export LOCAL_WORLD_SIZE=$SLURM_NTASKS_PER_NODE  # required by torchrec model-parallelism (adjust with CUDA_VISIBLE_DEVICES)
+export ENABLE_DEBUGGING="0"
 
 
 export TOTAL_TRAINING_SAMPLES=4195197692
@@ -43,10 +45,16 @@ fi
 
 set -x
 # Launch benchmark
+
+
+# FIXME: This is needed until the uenv plugin is fixed
+unset UENV_MOUNT_LIST
+
 srun -ul --environment="$(realpath env/ngc-recommendation_v2-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "
+
 hostname
 RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=0,1,2,3 \
-python dlrm_main.py \
+python -W \"ignore\" dlrm_main.py \
     --embedding_dim 128 \
     --dense_arch_layer_sizes 512,256,128 \
     --over_arch_layer_sizes 1024,1024,512,256,1 \
@@ -61,5 +69,6 @@ python dlrm_main.py \
     --dcn_num_layers=3 \
     --dcn_low_rank_dim=512 \
     --adagrad \
+    --print_progress \
     --learning_rate 0.005
 "
