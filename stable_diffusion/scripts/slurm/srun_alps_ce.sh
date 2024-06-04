@@ -60,7 +60,7 @@ fi
     # --container-mounts="${MOUNTS}" \
     # --container-workdir="${WORKDIR}" \
 srun \
-    --environment="$(realpath env/ngc-stable-diffusion-24.01.toml)" \
+    --environment="$(realpath env/ngc-stable-diffusion-24.05.toml)" \
     --ntasks-per-node="${GPUS_PER_NODE}" \
     --nodes="${NUM_NODES}" \
     ${ENROOT_ENTRYPOINT} \

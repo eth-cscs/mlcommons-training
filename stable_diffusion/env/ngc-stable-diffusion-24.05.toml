@@ -1,0 +1,30 @@
+#image = "/bret/scratch/cscs/lukasd/images/ngc-megatron+24.03.sqsh"
+image = "/bret/scratch/cscs/aurianer/squashfs/ml+ngc-stable-diffusion+24.05.sqsh"
+
+mounts = [
+  "/bret:/bret",
+  "/mchstor2:/mchstor2",
+  "/etc/slurm:/etc/slurm",
+  "/users/aurianer/.ssh/cscs-key.pub:/users/aurianer/.ssh/authorized_keys",
+  "/users/aurianer/.bash_history:/users/aurianer/.bash_history",
+  # These are needed until the aws-ofi-nccl plugin is back in place
+  "/usr/lib64/libnl-3.so:/usr/lib/libnl-3.so",
+  "/usr/lib64/libnl-3.so.200:/usr/lib/libnl-3.so.200",
+  "/usr/lib64/libnl-3.so.200.25.0:/usr/lib/libnl-3.so.200.25.0",
+  "/bret/scratch/cscs/manitart/nccl_plugin_lib/libnccl-net.so:/usr/lib/libnccl-net-ofi.so"
+]
+
+writable = true
+
+workdir = "/bret/scratch/cscs/aurianer/projects/mlcommons-training/stable_diffusion"
+
+#[annotations]
+#com.hooks.aws_ofi_nccl.enabled = "true"
+#com.hooks.aws_ofi_nccl.variant = "cuda12"
+
+[env]
+ENROOT_CXI_HOOK = "1"
+NCCL_NET_PLUGIN = "ofi"
+NCCL_DEBUG = "INFO"
+FI_CXI_DISABLE_HOST_REGISTER = "1"
+FI_MR_CACHE_MONITOR = "userfaultfd"
