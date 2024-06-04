@@ -42,6 +42,8 @@ start=$(date +%s)
 start_fmt=$(date +%Y-%m-%d\ %r)
 echo "STARTING TIMING RUN AT $start_fmt"
 
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+
 # CLEAR YOUR CACHE HERE
 python -c "
 from mlperf_logging.mllog import constants
