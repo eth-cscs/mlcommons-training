@@ -137,7 +137,7 @@ run_cmd="RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$S
 DATETIME=`date +'date_%y-%m-%d_time_%H-%M-%S'`
 
 # export TORCH_NCCL_BLOCKING_WAIT=1
-srun -ul --environment="$(realpath env/ngc-megatron-24.03.toml)" --container-workdir=$PWD \
+srun -ul --environment="$(realpath env/ngc-megatron.toml)" --container-workdir=$PWD \
   ${ENROOT_ENTRYPOINT} sh -c "
   hostname
   ${run_cmd}
