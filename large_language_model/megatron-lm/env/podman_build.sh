@@ -1,4 +1,7 @@
 #!/bin/bash
  
-podman build --ulimit nofile=$(ulimit -n):$(ulimit -n) -t lukasgd/ngc-megatron:24.03 .
-enroot import -x mount -o /bret/scratch/cscs/lukasd/images/ngc-megatron+24.03.sqsh podman://lukasgd/ngc-megatron:24.03
+podman build --ulimit nofile=$(ulimit -n):$(ulimit -n) -t mlperf-megatron:24.05 .
+
+mkdir -p $SCRATCH/images
+enroot import -x mount -o $SCRATCH/images/mlperf-megatron+24.05.sqsh podman://mlperf-megatron:24.05
+

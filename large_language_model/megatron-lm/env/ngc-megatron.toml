@@ -1,0 +1,26 @@
+# image = "/bret/scratch/cscs/lukasd/images/ngc-megatron+24.03.sqsh"
+image = "/bret/scratch/cscs/dealmeih/images/mlperf-megatron+24.05.sqsh"
+
+mounts = [
+  "/bret:/bret",
+  "/mchstor2:/mchstor2",
+  "/etc/slurm:/etc/slurm",
+  #"/users/lukasd/.ssh/cscs-key.pub:/users/lukasd/.ssh/authorized_keys",
+  #"/users/lukasd/.vscode-server:/users/lukasd/.vscode-server",
+  #"/users/lukasd/.wget-hsts:/users/lukasd/.wget-hsts"
+]
+
+writable = true
+
+[env]
+FI_CXI_DISABLE_HOST_REGISTER = "1"
+FI_MR_CACHE_MONITOR = "userfaultfd"
+
+#TORCH_CPP_LOG_LEVEL = "INFO"
+#TORCH_DISTRIBUTED_DEBUG = "DETAIL"
+#NCCL_DEBUG = "DEBUG"
+#NCCL_ASYNC_ERROR_HANDLING = "1"
+
+[annotations]
+com.hooks.aws_ofi_nccl.enabled = "true"
+com.hooks.aws_ofi_nccl.variant = "cuda12"
