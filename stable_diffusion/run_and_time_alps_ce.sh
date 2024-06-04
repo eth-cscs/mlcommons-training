@@ -1,10 +1,14 @@
 #!/bin/bash
 
+: "${BASE_DATA_DIR:=/mchstor2/scratch/cscs/aurianer/mlperf/data/stable_diffusion}"
+
 : "${NUM_NODES:=1}"
-: "${GPUS_PER_NODE:=8}"
-: "${CHECKPOINT:=/checkpoints/sd/512-base-ema.ckpt}"
-: "${RESULTS_DIR:=}"
-: "${CONFIG:=./configs/train_01x08x08.yaml}"
+# : "${GPUS_PER_NODE:=8}"
+: "${GPUS_PER_NODE:=4}"
+: "${CHECKPOINT:=${BASE_DATA_DIR}/checkpoints/sd/512-base-ema.ckpt}"
+: "${RESULTS_DIR:=./results}"
+# : "${CONFIG:=./configs/train_01x08x08.yaml}"
+: "${CONFIG:=./configs/alps_train_01x04x08.yaml}"
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -32,7 +36,7 @@ set -e
 export HF_DATASETS_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export DIFFUSERS_OFFLINE=1
-export HF_HOME=/hf_home
+export HF_HOME=./hf_home
 
 start=$(date +%s)
 start_fmt=$(date +%Y-%m-%d\ %r)

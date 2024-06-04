@@ -140,14 +140,16 @@ def train_valid_test_datasets_provider(train_val_test_num_samples):
 if __name__ == "__main__":
 
     import os
-    if os.environ.get("ENABLE_DEBUGGING", False) and \
-       os.environ["DEBUG_RANK"] == os.environ.get("SLURM_PROCID"):
-        import debugpy
-        debugpy.listen(5678)
-        print("Waiting for debugger attach")
-        debugpy.wait_for_client()
-        debugpy.breakpoint()
-
+    if os.environ.get("ENABLE_DEBUGGING", False):
+        if os.environ.get("DEBUG_RANK", '0') == os.environ.get("SLURM_PROCID"):
+            import debugpy
+            debugpy.listen(5678)
+            print("Waiting for debugger attach")
+            debugpy.wait_for_client()
+            debugpy.breakpoint()
+        else:
+            import time
+            time.sleep(60)
 
     pretrain(train_valid_test_datasets_provider, model_provider,
              ModelType.encoder_or_decoder,
