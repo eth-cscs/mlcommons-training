@@ -13,9 +13,9 @@
 set -x
 
 # Vars without defaults
-LOG_DIR=${1:?LOG_DIR not set}
-BPE_DIR=${2:?BPE_DIR not set}
-CONT="${3:?CONT not set}"
+LOG_DIR=${1:-$PWD/logs}
+BPE_DIR=${2:-/mchstor2/scratch/cscs/lukasd/mlperf/data/megatron-lm/preprocessed_c4_spm}
+# CONT="${3:?CONT not set}"
 
 # Set torch.distributed variables
 export MASTER_ADDR=$(scontrol show hostname $SLURM_NODELIST | head -n1)
@@ -23,10 +23,8 @@ export MASTER_PORT=29500 # default from torch launcher
 export WORLD_SIZE=$SLURM_NTASKS
 
 # export TORCH_EXTENSIONS_DIR=$SCRATCH/.torch_ext
-export TORCH_CUDA_ARCH_LIST=9.0
+export TORCH_CUDA_ARCH_LIST="9.0"
 export MAX_JOBS=64
-
-export NCCL_DEBUG=INFO
 
 # Vars with defaults
 : "${MEGATRON_DIR:=$PWD}"
@@ -40,8 +38,8 @@ export NCCL_DEBUG=INFO
 : "${EXTERNAL_GBS:=1536}"
 
 # Setup directories
-CHECKPOINT_DIR="${LOG_DIR}/GPT3-175B-checkpoints"
-TENSORBOARD_DIR="${LOG_DIR}/GPT3-175B-tensorboard"
+CHECKPOINT_DIR="${LOG_DIR}/GPT3-175B/${SLURM_JOBID}"
+TENSORBOARD_DIR="${LOG_DIR}/GPT3-175B"
 
 mkdir -p ${LOG_DIR}
 mkdir -p ${CHECKPOINT_DIR}
@@ -66,8 +64,8 @@ echo "setting exit duration to $EXIT_DURATION minutes"
 
 options=" \
 --exit-duration-in-mins ${EXIT_DURATION} \
---tensor-model-parallel-size 8 \
---pipeline-model-parallel-size 8 \
+--tensor-model-parallel-size 4 \
+--pipeline-model-parallel-size 16 \
 --sequence-parallel \
 --recompute-activations \
 --num-layers 96 \
@@ -139,8 +137,8 @@ run_cmd="RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$S
 DATETIME=`date +'date_%y-%m-%d_time_%H-%M-%S'`
 
 # export TORCH_NCCL_BLOCKING_WAIT=1
-srun -ul --environment="$(realpath env/ngc-megatron-24.03.toml)" \
-  --output=$LOG_DIR/GPT3-175B-runlog-$SLURM_JOB_ID-$DATETIME.log ${ENROOT_ENTRYPOINT} sh -c "
+srun -ul --environment="$(realpath env/ngc-megatron-24.03.toml)" --container-workdir=$PWD \
+  ${ENROOT_ENTRYPOINT} sh -c "
   hostname
   ${run_cmd}
 "
