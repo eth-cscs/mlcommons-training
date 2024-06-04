@@ -94,6 +94,7 @@ mkdir -p ${LOG_DIR}
     # --account=${ACCOUNT} \
     # --partition=${PARTITION} \
 sbatch \
+    -w $(cat /bret/scratch/cscs/dealmeih/dev/nccl_test/good.nodes) \
     --job-name="mlperf-stable-diffusion" \
     --nodes="${NUM_NODES}" \
     --ntasks-per-node="${GPUS_PER_NODE}" \
