@@ -375,7 +375,8 @@ if __name__ == "__main__":
                                          submission_benchmark=mllog_constants.STABLE_DIFFUSION,
                                          submission_division=mllog_constants.CLOSED,
                                          submission_org="reference_implementation",
-                                         submission_platform="DGX-A100",
+                                         #submission_platform="DGX-A100",
+                                         submission_platform="GH200",
                                          submission_poc_name="Ahmad Kiswani",
                                          submission_poc_email="akiswani@nvidia.com",
                                          submission_status=mllog_constants.ONPREM)
