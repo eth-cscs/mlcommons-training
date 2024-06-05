@@ -40,8 +40,11 @@ then
     # MPICH options
     # is required for CUDA-aware MPI to work
     export MPICH_GPU_SUPPORT_ENABLED=1                                                                            
-    # MPICH_GPU_SUPPORT_ENABLED=1 and MPICH_SMP_SINGLE_COPY_MODE=XPMEM are mutually exclusive, and MPICH will fall back to CMA if GPU support is enabled.
+    # MPICH_GPU_SUPPORT_ENABLED=1 and MPICH_SMP_SINGLE_COPY_MODE=XPMEM are
+    # mutually exclusive, and MPICH will fall back to CMA if GPU support is
+    # enabled.
     #export MPICH_SMP_SINGLE_COPY_MODE=xpmem
+    export MPICH_SMP_SINGLE_COPY_MODE=CMA
 else
     let lrank=$OMPI_COMM_WORLD_LOCAL_RANK
     let grank=$OMPI_COMM_WORLD_RANK
