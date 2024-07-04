@@ -3,18 +3,18 @@
 #SBATCH --job-name mlperf-megatron
 #SBATCH --output=logs/slurm-%x.%j.out
 #SBATCH --time=02:00:00
-#SBATCH --nodes=16
+#SBATCH --nodes=128
 #SBATCH --ntasks-per-node=4
 ##SBATCH -p luna -A mlperf -t 00:20:00 --nodes=8 --exclusive --mem=0 --overcommit --ntasks-per-node=8 --job-name=mlperf-megatron:megatron
 
 # Execute via:
-# GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3_alps_ce.sh logs /mchstor2/scratch/cscs/lukasd/mlperf/data/megatron-lm/preprocessed_c4_spm none
+# GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3_alps_ce.sh logs /capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/preprocessed_c4_spm none
 
-set -x
+set -ex
 
 # Vars without defaults
 LOG_DIR=${1:-$PWD/logs}
-BPE_DIR=${2:-/mchstor2/scratch/cscs/lukasd/mlperf/data/megatron-lm/preprocessed_c4_spm}
+BPE_DIR=${2:-/capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/preprocessed_c4_spm}
 # CONT="${3:?CONT not set}"
 
 # Set torch.distributed variables
