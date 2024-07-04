@@ -6,8 +6,8 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --output logs/slurm-%x.%j.out
 
-DATA_DIR=/mchstor2/scratch/cscs/lukasd/mlperf/data/image_classification/tfrecords/ILSVRC/Data/CLS-LOC
-MODEL_DIR=/mchstor2/scratch/cscs/lukasd/mlperf/data/image_classification/model
+DATA_DIR=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification/tfrecords/ILSVRC/Data/CLS-LOC
+MODEL_DIR=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification/model
 
 mkdir -p logs
 

@@ -228,5 +228,5 @@ def build_imagenet_dfs(
 
 
 if __name__ == "__main__":
-    build_imagenet_dfs("/mchstor2/scratch/cscs/lukasd/mlperf/data/image_classification/", download=False)
+    build_imagenet_dfs("/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification/", download=False)
     print('All done')

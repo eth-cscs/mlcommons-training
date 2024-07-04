@@ -4,4 +4,4 @@
 #SBATCH --time 24:00:00
 #SBATCH --output logs/slurm-%x.%j.out
 
-srun --environment=$(realpath env/ngc-single_stage_detector-24.03.toml) scripts/download_openimages_mlperf.sh -d /mchstor2/scratch/cscs/lukasd/mlperf/data/single_stage_detector
+srun --environment=$(realpath env/ngc-single_stage_detector-24.03.toml) scripts/download_openimages_mlperf.sh -d /capstor/scratch/cscs/dealmeih/ds/mlperf/data/single_stage_detector

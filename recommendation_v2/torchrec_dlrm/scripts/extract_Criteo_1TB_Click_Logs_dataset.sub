@@ -8,7 +8,7 @@
 
 mkdir -p logs
 
-DATA_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/recommendation"
+DATA_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/recommendation"
 
 cd ${DATA_DIR}
 srun unzip criteo_terabyte-dataset-24-files_2023-04-28_0712.zip

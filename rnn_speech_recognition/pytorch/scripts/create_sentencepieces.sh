@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-: ${DATA_DIR:="/mchstor2/scratch/cscs/lukasd/mlperf/data/rnn_speech_recognition/datasets"}
+: ${DATA_DIR:="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/rnn_speech_recognition/datasets"}
 
 mkdir -p ${DATA_DIR}/sentencepieces
 jq -r '.[]["transcript"]' ${DATA_DIR}/LibriSpeech/librispeech-train-*-wav.json > /tmp/txt.txt
