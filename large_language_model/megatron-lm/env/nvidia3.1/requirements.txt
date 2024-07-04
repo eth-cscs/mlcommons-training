@@ -1,7 +1,0 @@
-git+https://github.com/mlcommons/logging.git@3.1.0-rc1
-git+https://github.com/NVIDIA/mlperf-common.git@training-v3.0-rc0
-py_cpuinfo
-setuptools_scm
-zarr==2.13
-git+https://github.com/google/tensorstore/@v0.1.60
-# tensorstore 
