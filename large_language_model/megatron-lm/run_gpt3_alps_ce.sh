@@ -11,9 +11,10 @@
 # GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3_alps_ce.sh logs /capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/preprocessed_c4_spm none
 
 set -ex
+export DIR=$(dirname $(scontrol show job $SLURM_JOBID | awk -F= '/Command=/{print $2}' | head -n 1))
 
 # Vars without defaults
-LOG_DIR=${1:-$PWD/logs}
+LOG_DIR=${1:-$DIR/logs}
 BPE_DIR=${2:-/capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/preprocessed_c4_spm}
 # CONT="${3:?CONT not set}"
 
@@ -27,7 +28,7 @@ export TORCH_CUDA_ARCH_LIST="9.0"
 export MAX_JOBS=64
 
 # Vars with defaults
-: "${MEGATRON_DIR:=$PWD}"
+: "${MEGATRON_DIR:=$DIR}"
 : "${GBS:=1536}"
 : "${LR:=2.0e-5}"
 : "${MIN_LR:=2.0e-6}"
@@ -46,7 +47,7 @@ mkdir -p ${CHECKPOINT_DIR}
 mkdir -p ${TENSORBOARD_DIR}
 
 # Get the data blend
-. $PWD/gpt3_blend.sh
+. $DIR/gpt3_blend.sh
 
 ################################################################################
 ### Set exit duration based on variable time allocated for this specific job ###
@@ -137,7 +138,7 @@ run_cmd="RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$S
 DATETIME=`date +'date_%y-%m-%d_time_%H-%M-%S'`
 
 # export TORCH_NCCL_BLOCKING_WAIT=1
-srun -ul --environment="$(realpath env/ngc-megatron.toml)" --container-workdir=$PWD \
+srun -ul --environment=$DIR/env/ngc-megatron.toml --container-workdir=$DIR \
   ${ENROOT_ENTRYPOINT} sh -c "
   hostname
   ${run_cmd}
@@ -145,7 +146,7 @@ srun -ul --environment="$(realpath env/ngc-megatron.toml)" --container-workdir=$
 
 # srun -l \
 #      --container-image $CONT \
-#      --container-mounts "$PWD:$PWD,${COM_DIR}:${COM_DIR},${LOG_DIR}:${LOG_DIR},${BPE_DIR}:${BPE_DIR}" \
+#      --container-mounts "$DIR:$DIR,${COM_DIR}:${COM_DIR},${LOG_DIR}:${LOG_DIR},${BPE_DIR}:${BPE_DIR}" \
 #      --output=$LOG_DIR/GPT3-175B-runlog-$DATETIME.log sh -c "${run_cmd}"
 
 set +x
