@@ -4,7 +4,7 @@
 #SBATCH --time 24:00:00
 #SBATCH --output logs/slurm-%x.%j.out
 
-DATA_DIR=/mchstor2/scratch/cscs/lukasd/mlperf/data/image_classification
+DATA_DIR=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification
 
 # `local_scratch_dir` will be where the TFRecords are stored.`
 srun -u --environment="$(realpath env/ngc-image_classification-24.03.toml)" bash -c "

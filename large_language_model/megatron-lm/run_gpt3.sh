@@ -8,7 +8,7 @@
 ##SBATCH -p luna -A mlperf -t 00:20:00 --nodes=8 --exclusive --mem=0 --overcommit --ntasks-per-node=8 --job-name=mlperf-megatron:megatron
 
 # Execute via:
-# GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3_alps_ce.sh logs /mchstor2/scratch/cscs/lukasd/mlperf/data/megatron-lm/preprocessed_c4_spm none
+# GBS=4 USE_BF16=true EXTERNAL_GBS=4 sbatch run_gpt3_alps_ce.sh logs /capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/preprocessed_c4_spm none
 
 set -x
 

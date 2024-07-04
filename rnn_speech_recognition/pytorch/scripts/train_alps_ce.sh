@@ -22,7 +22,7 @@
 
 export OMP_NUM_THREADS=1
 
-: ${DATA_DIR:=${1:-"/mchstor2/scratch/cscs/lukasd/mlperf/data/rnn_speech_recognition/datasets/LibriSpeech/"}}
+: ${DATA_DIR:=${1:-"/capstor/scratch/cscs/dealmeih/ds/mlperf/data/rnn_speech_recognition/datasets/LibriSpeech/"}}
 : ${MODEL_CONFIG:=${2:-"configs/baseline_v3-1023sp.yaml"}}
 : ${OUTPUT_DIR:=${3:-"./results"}}
 : ${CHECKPOINT:=${4:-}}

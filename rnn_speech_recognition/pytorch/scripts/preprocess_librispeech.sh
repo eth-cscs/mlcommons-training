@@ -16,7 +16,7 @@
 
 set -euxo pipefail
 
-: ${DATA_DIR:="/mchstor2/scratch/cscs/lukasd/mlperf/data/rnn_speech_recognition/datasets"}
+: ${DATA_DIR:="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/rnn_speech_recognition/datasets"}
 
 python ./utils/convert_librispeech.py --parallel 144 \
     --input_dir ${DATA_DIR}/LibriSpeech/train-clean-100 \

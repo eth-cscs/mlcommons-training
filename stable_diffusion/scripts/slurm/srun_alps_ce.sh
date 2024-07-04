@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-: "${BASE_DATA_DIR:=/mchstor2/scratch/cscs/aurianer/mlperf/data/stable_diffusion}"
+: "${BASE_DATA_DIR:=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/stable_diffusion}"
 
 # : "${NUM_NODES:=8}"
 : "${NUM_NODES:=1}"

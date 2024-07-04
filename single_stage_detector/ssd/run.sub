@@ -21,7 +21,7 @@ DATESTAMP=${DATESTAMP:-`date +'%y%m%d%H%M%S%N'`}
 BENCHMARK=${BENCHMARK:-"single_stage_detector"}
 BENCHMARK_NAME="ssd"
 CONT=${CONT:-"mlperf-$BENCHMARK"}
-DATADIR=${DATADIR:-"/mchstor2/scratch/cscs/lukasd/mlperf/data/single_stage_detector/open-images-v6-mlperf"} # there should be an ./open-images-v6-mlperf dir in here
+DATADIR=${DATADIR:-"/capstor/scratch/cscs/dealmeih/ds/mlperf/data/single_stage_detector/open-images-v6-mlperf"} # there should be an ./open-images-v6-mlperf dir in here
 LOGDIR=${LOGDIR:-"logs/results/$BENCHMARK"}
 NEXP=${NEXP:-5} # Default number of times to run the benchmark
 

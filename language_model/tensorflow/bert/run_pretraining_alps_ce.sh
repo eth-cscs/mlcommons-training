@@ -12,7 +12,7 @@ LOG_DIR=logs
 
 mkdir -p ${LOG_DIR}/BERT-$SLURM_JOB_ID
 
-DATASET_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/language_model_bert"
+DATASET_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/language_model_bert"
 
 # Debugging (single rank, controlled by DEBUG_RANK, defaults to rank 0)
 if [ "${ENABLE_DEBUGGING:-0}" -eq 1 ]; then

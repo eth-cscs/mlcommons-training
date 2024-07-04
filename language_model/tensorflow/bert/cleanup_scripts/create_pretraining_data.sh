@@ -10,7 +10,7 @@ set -e
 
 mkdir -p logs
 
-DATASET_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/language_model_bert"
+DATASET_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/language_model_bert"
 
 set -x
 srun -u --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" bash -c "

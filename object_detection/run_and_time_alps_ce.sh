@@ -12,8 +12,8 @@ export MASTER_ADDR=$(hostname)
 export MASTER_PORT=29500
 export WORLD_SIZE=$SLURM_NTASKS
 
-export DATASET_CATALOG_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/object_detection/pytorch/datasets"
-export TORCH_MODEL_ZOO="/mchstor2/scratch/cscs/lukasd/mlperf/data/object_detection/pytorch/models"
+export DATASET_CATALOG_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/object_detection/pytorch/datasets"
+export TORCH_MODEL_ZOO="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/object_detection/pytorch/models"
 
 # Debugging (single rank, controlled by DEBUG_RANK, defaults to rank 0)
 if [ "${ENABLE_DEBUGGING:-0}" -eq 1 ]; then

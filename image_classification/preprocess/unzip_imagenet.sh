@@ -6,5 +6,5 @@
 
 set -euxo pipefail
 
-cd /mchstor2/scratch/cscs/lukasd/mlperf/data/image_classification
+cd /capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification
 srun -u unzip imagenet-object-localization-challenge.zip

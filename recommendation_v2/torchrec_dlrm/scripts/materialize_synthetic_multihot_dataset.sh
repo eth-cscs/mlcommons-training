@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=288
 
-DATA_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/recommendation/criteo"
+DATA_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/recommendation/criteo"
 PREPROCESSED_CRITEO_1TB_CLICK_LOGS_DATASET_PATH=${DATA_DIR}/numpy_contiguous_shuffled
 MATERIALIZED_DATASET_PATH=${DATA_DIR}/synthetic_multihot
 

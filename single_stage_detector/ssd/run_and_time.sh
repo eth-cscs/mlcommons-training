@@ -36,8 +36,8 @@ BATCHSIZE=${BATCHSIZE:-2}
 EVALBATCHSIZE=${EVALBATCHSIZE:-${BATCHSIZE}}
 NUMEPOCHS=${NUMEPOCHS:-30}
 LOG_INTERVAL=${LOG_INTERVAL:-20}
-DATASET_DIR=${DATASET_DIR:-"/mchstor2/scratch/cscs/lukasd/mlperf/data/single_stage_detector/open-images-v6-mlperf"}
-TORCH_HOME=${TORCH_HOME:-"/mchstor2/scratch/cscs/lukasd/mlperf/data/single_stage_detector/torch-model-cache"}
+DATASET_DIR=${DATASET_DIR:-"/capstor/scratch/cscs/dealmeih/ds/mlperf/data/single_stage_detector/open-images-v6-mlperf"}
+TORCH_HOME=${TORCH_HOME:-"/capstor/scratch/cscs/dealmeih/ds/mlperf/data/single_stage_detector/torch-model-cache"}
 
 # Handle MLCube parameters
 while [ $# -gt 0 ]; do

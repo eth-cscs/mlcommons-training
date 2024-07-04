@@ -20,7 +20,7 @@ START_EVAL_AT=1000
 EVALUATE_EVERY=20
 LEARNING_RATE="0.8"
 LR_WARMUP_EPOCHS=200
-DATASET_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/image_segmentation/kits19/preprocessed"
+DATASET_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_segmentation/kits19/preprocessed"
 BATCH_SIZE=2
 GRADIENT_ACCUMULATION_STEPS=1
 

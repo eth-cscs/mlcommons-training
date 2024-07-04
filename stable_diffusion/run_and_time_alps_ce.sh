@@ -1,6 +1,6 @@
 #!/bin/bash
 
-: "${BASE_DATA_DIR:=/mchstor2/scratch/cscs/aurianer/mlperf/data/stable_diffusion}"
+: "${BASE_DATA_DIR:=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/stable_diffusion}"
 
 : "${NUM_NODES:=1}"
 # : "${GPUS_PER_NODE:=8}"

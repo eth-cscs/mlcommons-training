@@ -19,7 +19,7 @@ export LOCAL_WORLD_SIZE=$SLURM_NTASKS_PER_NODE  # required by torchrec model-par
 export TOTAL_TRAINING_SAMPLES=4195197692
 export GLOBAL_BATCH_SIZE=65536
 
-DATASET_DIR="/mchstor2/scratch/cscs/lukasd/mlperf/data/recommendation/criteo"
+DATASET_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/recommendation/criteo"
 USE_MATERIALIZED_SYNTHETIC_MULTIHOT_DATASET=1
 
 if [ "${USE_MATERIALIZED_SYNTHETIC_MULTIHOT_DATASET:-0}" -eq 1 ]; then
