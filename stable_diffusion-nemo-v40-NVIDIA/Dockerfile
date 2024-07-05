@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Note: this should be build with --ulimit nofile=$(ulimit -n):$(ulimit -n)
+
 ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:24.04-py3
 FROM ${FROM_IMAGE_NAME}
 
