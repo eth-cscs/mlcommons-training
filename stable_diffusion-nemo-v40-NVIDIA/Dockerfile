@@ -23,15 +23,31 @@ RUN apt-get install -yqq ffmpeg libsm6 libxext6
 RUN apt-get install --reinstall ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-ENV NEMO_REVISION=v2.0.0.rc0.beta
+# NeMo dependencies
+RUN pip install -vvv tensorstore==0.1.45
+RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1.7
 
+# We use a different tag to install the dependencies otherwise nemo fails at runtime
+ENV NEMO_REVISION=v2.0.0.rc0.beta
+ENV NEMO_REVISION_DEPS=v2.0.0rc0
 RUN git clone https://github.com/NVIDIA/NeMo.git && \
     cd NeMo && \
     git config user.email "email@email.com" && \
     git config user.name "name name" && \
+    git checkout ${NEMO_REVISION_DEPS} && \
+    echo NEMO_DEPS_COMMIT_HASH=$(git rev-parse HEAD) && \
+    pip uninstall -y nemo-toolkit && \
+    pip install pkgconfig py-cpuinfo "cython<3.0.0" && \
+    pip install --no-build-isolation -e ".[nlp]" && \
+    echo NEMO_REVISION=${NEMO_REVISION} && \
     git checkout ${NEMO_REVISION} && \
     echo NEMO_COMMIT_HASH=$(git rev-parse HEAD) && \
-    bash reinstall.sh
+    pip install --no-build-isolation --no-deps -e ".[nlp]" \
+
+# Build NeMo (has to be called after all changes to repo)
+RUN cd NeMo && \
+      cd nemo/collections/nlp/data/language_modeling/megatron && \
+      make
 
 ARG MEGATRON_REVISION=core_v0.7.0.beta
 RUN pip uninstall -y megatron-core && \
