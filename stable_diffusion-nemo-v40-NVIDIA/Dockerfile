@@ -25,6 +25,9 @@ RUN apt-get install -yqq ffmpeg libsm6 libxext6
 RUN apt-get install --reinstall ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip to avoid warnings, pip used for benchmark 24.1.1
+RUN pip install --quiet --upgrade pip
+
 # NeMo dependencies
 RUN pip install -vvv tensorstore==0.1.45
 RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1.7
