@@ -18,7 +18,10 @@ FROM ${FROM_IMAGE_NAME}
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update
-RUN apt-get install -y ffmpeg libsm6 libxext6
+RUN apt-get install -yqq ffmpeg libsm6 libxext6
+# Cloning nemo is failing with "CRLfile: none" without this
+RUN apt-get install --reinstall ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV NEMO_REVISION=v2.0.0.rc0.beta
 
