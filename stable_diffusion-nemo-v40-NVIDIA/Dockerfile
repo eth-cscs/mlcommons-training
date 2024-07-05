@@ -34,8 +34,6 @@ ENV NEMO_REVISION=v2.0.0.rc0.beta
 ENV NEMO_REVISION_DEPS=v2.0.0rc0
 RUN git clone https://github.com/NVIDIA/NeMo.git && \
     cd NeMo && \
-    git config user.email "email@email.com" && \
-    git config user.name "name name" && \
     git checkout ${NEMO_REVISION_DEPS} && \
     echo NEMO_DEPS_COMMIT_HASH=$(git rev-parse HEAD) && \
     pip uninstall -y nemo-toolkit && \
