@@ -32,6 +32,9 @@ RUN pip install --quiet --upgrade pip
 RUN pip install -vvv tensorstore==0.1.45
 RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1.7
 
+# Custom libraries version
+WORKDIR /workspace/
+
 # We use a different tag to install the dependencies otherwise nemo fails at runtime
 ENV NEMO_REVISION=v2.0.0.rc0.beta
 ENV NEMO_REVISION_DEPS=v2.0.0rc0
