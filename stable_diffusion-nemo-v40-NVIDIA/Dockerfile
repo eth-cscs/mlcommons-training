@@ -15,6 +15,8 @@
 ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:24.04-py3
 FROM ${FROM_IMAGE_NAME}
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update
 RUN apt-get install -y ffmpeg libsm6 libxext6
 
