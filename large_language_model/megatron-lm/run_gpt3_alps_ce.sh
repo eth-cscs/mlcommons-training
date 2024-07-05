@@ -14,7 +14,7 @@ set -ex
 export DIR=$(dirname $(scontrol show job $SLURM_JOBID | awk -F= '/Command=/{print $2}' | head -n 1))
 
 # Vars without defaults
-LOG_DIR=${1:-$DIR/logs}
+LOG_DIR=${1:-$PWD/logs}
 BPE_DIR=${2:-/capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/preprocessed_c4_spm}
 # CONT="${3:?CONT not set}"
 
