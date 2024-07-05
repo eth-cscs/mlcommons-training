@@ -16,6 +16,7 @@
 """Pretrain utilities."""
 
 from datetime import datetime
+import os
 import math
 import sys
 import time
@@ -122,8 +123,11 @@ def pretrain(train_valid_test_dataset_provider,
     mllogger.event('submission_status', 'reference')
     mllogger.event('submission_division', 'closed')
     mllogger.event('submission_benchmark', 'gpt3')
-    mllogger.event(key=mllogger.constants.SEED, value=args.seed,
-                        sync=False)
+    mllogger.event('number_of_nodes', int(os.environ.get('SLURM_NNODES')))
+    mllogger.event('accelerators_per_node', int(os.environ.get('SLURM_NTASKS_PER_NODE')))
+    mllogger.event('tensor_parallelism', args.tensor_model_parallel_size)
+    mllogger.event('pipeline_parallelism', args.pipeline_model_parallel_size)
+    mllogger.event(key=mllogger.constants.SEED, value=args.seed, sync=False)
     mllogger.event(key="opt_name", value=args.optimizer, sync=False)
     mllogger.event(key="opt_adam_beta_1", value=args.adam_beta1, sync=False)
     mllogger.event(key="opt_adam_beta_2", value=args.adam_beta2, sync=False)
