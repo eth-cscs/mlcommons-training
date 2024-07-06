@@ -73,7 +73,8 @@ RUN pip uninstall -y megatron-core && \
 ENV PYTHONPATH "${PYTHONPATH}:/workspace/Megatron-LM"
 
 ## 2. Transformer Engine +fix for arm64
-ARG TE_REVISION=3b4d9e8766b829d50ac78bb26f770fb8d9825ae7 # v1.6rc1
+#ARG TE_REVISION=3b4d9e8766b829d50ac78bb26f770fb8d9825ae7 # v1.6rc1
+ARG TE_REVISION=868c7d301bc2f61ec077884895999569b258f867
 RUN if [ "${TE_REVISION}" != SKIP ]; then \
       NVTE_WITH_USERBUFFERS=1 MPI_HOME=/usr/local/mpi pip install --force-reinstall --no-deps git+https://github.com/NVIDIA/TransformerEngine.git@${TE_REVISION} \
     ; fi
