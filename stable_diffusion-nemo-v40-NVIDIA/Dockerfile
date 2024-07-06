@@ -35,6 +35,9 @@ RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1
 # Custom libraries version
 WORKDIR /workspace/
 
+# Disable detached head git warning
+RUN git config --global advice.detachedHead false
+
 # We use a different tag to install the dependencies otherwise nemo fails at runtime
 ENV NEMO_REVISION=v2.0.0.rc0.beta
 ENV NEMO_REVISION_DEPS=v2.0.0rc0
