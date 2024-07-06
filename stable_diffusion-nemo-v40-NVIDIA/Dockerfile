@@ -31,6 +31,14 @@ RUN pip install --quiet --upgrade pip
 # NeMo dependencies
 RUN pip install -vvv tensorstore==0.1.45
 RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1.7
+# We install torchtext without dependencies because there is a incompatibility message about
+# incompatible pytorch versions whereas the commit used by nvidia is just longer but targeting the
+# same commit (torch==2.3.0a0+6ddf5cf vs installed torch 2.3.0a0+6ddf5cf85e.nv24.4).
+RUN pip install --no-deps torchtext
+# List dependencies of torchtext without torch to force using the installed one
+RUN pip show torchtext | grep --color=none Requires: | cut -d: -f2- | tr ', ' "\n" | grep -v torch > requirements_torchtext.txt
+RUN pip install -r requirements_torchtext.txt && rm requirements_torchtext.txt
+
 
 # Custom libraries version
 WORKDIR /workspace/
@@ -38,7 +46,7 @@ WORKDIR /workspace/
 # Disable detached head git warning
 RUN git config --global advice.detachedHead false
 
-# We use a different tag to install the dependencies otherwise nemo fails at runtime
+# We use a different tag to install the dependencies otherwise nemo fails at runtime.
 ENV NEMO_REVISION=v2.0.0.rc0.beta
 ENV NEMO_REVISION_DEPS=v2.0.0rc0
 RUN git clone https://github.com/NVIDIA/NeMo.git && \
@@ -51,7 +59,7 @@ RUN git clone https://github.com/NVIDIA/NeMo.git && \
     echo NEMO_REVISION=${NEMO_REVISION} && \
     git checkout ${NEMO_REVISION} && \
     echo NEMO_COMMIT_HASH=$(git rev-parse HEAD) && \
-    pip install --no-build-isolation --no-deps -e ".[nlp]" \
+    pip install --no-build-isolation --no-deps -e ".[nlp]"
 
 # Build NeMo (has to be called after all changes to repo)
 RUN cd NeMo && \
@@ -60,6 +68,7 @@ RUN cd NeMo && \
 
 ENV PYTHONPATH "/workspace/NeMo:${PYTHONPATH}"
 
+# Same trick as for nemo, complaint about incompatible versions that are targeting the same commit.
 ARG MEGATRON_REVISION=core_v0.7.0.beta
 RUN pip uninstall -y megatron-core && \
     git clone https://github.com/NVIDIA/Megatron-LM.git && \
