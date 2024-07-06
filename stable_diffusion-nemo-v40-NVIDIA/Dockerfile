@@ -58,6 +58,8 @@ RUN cd NeMo && \
       cd nemo/collections/nlp/data/language_modeling/megatron && \
       make
 
+ENV PYTHONPATH "/workspace/NeMo:${PYTHONPATH}"
+
 ARG MEGATRON_REVISION=core_v0.7.0.beta
 RUN pip uninstall -y megatron-core && \
     git clone https://github.com/NVIDIA/Megatron-LM.git && \
@@ -83,12 +85,14 @@ RUN git clone https://github.com/NVIDIA/apex.git && \
     git checkout ${APEX_REVISION} && \
     CFLAGS="-g0" NVCC_APPEND_FLAGS="--threads 8" pip install -v --no-build-isolation --no-cache-dir --disable-pip-version-check --config-settings "--build-option=--cpp_ext --cuda_ext --bnp --xentropy --deprecated_fused_adam --deprecated_fused_lamb --fast_multihead_attn --distributed_lamb --fast_layer_norm --transducer --distributed_adam --fmha --fast_bottleneck --nccl_p2p --peer_memory --permutation_search --focal_loss --fused_conv_bias_relu --index_mul_2d --cudnn_gbn --group_norm --gpu_direct_storage" . && \
     rm -rf build
+ENV PYTHONPATH "/workspace/apex:${PYTHONPATH}"
 
 # Set working directory
 WORKDIR /workspace/sd
 
 # Copy code
 COPY . .
+ENV PYTHONPATH "/workspace/sd:${PYTHONPATH}"
 
 # install LDM
 RUN pip install -r requirements.txt
