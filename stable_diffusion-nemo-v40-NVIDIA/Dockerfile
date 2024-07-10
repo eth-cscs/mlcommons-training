@@ -12,22 +12,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Note: this should be build with --ulimit nofile=$(ulimit -n):$(ulimit -n)
+
 ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:24.04-py3
 FROM ${FROM_IMAGE_NAME}
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update
-RUN apt-get install -y ffmpeg libsm6 libxext6
+RUN apt-get install -yqq ffmpeg libsm6 libxext6
+# Cloning nemo is failing with "CRLfile: none" without this
+RUN apt-get install --reinstall ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip to avoid warnings, pip used for benchmark 24.1.1
+RUN pip install --quiet --upgrade pip
+
+# NeMo dependencies
+RUN pip install -vvv tensorstore==0.1.45
+RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1.7
+# We install torchtext without dependencies because there is a incompatibility message about
+# incompatible pytorch versions whereas the commit used by nvidia is just longer but targeting the
+# same commit (torch==2.3.0a0+6ddf5cf vs installed torch 2.3.0a0+6ddf5cf85e.nv24.4).
+RUN pip install --no-deps torchtext
+# List dependencies of torchtext without torch to force using the installed one
+RUN pip show torchtext | grep --color=none Requires: | cut -d: -f2- | tr ', ' "\n" | grep -v torch > requirements_torchtext.txt
+RUN pip install -r requirements_torchtext.txt && rm requirements_torchtext.txt
+
+
+# Custom libraries version
+WORKDIR /workspace/
+
+# Disable detached head git warning
+RUN git config --global advice.detachedHead false
+
+# We use a different tag to install the dependencies otherwise nemo fails at runtime.
 ENV NEMO_REVISION=v2.0.0.rc0.beta
-
+ENV NEMO_REVISION_DEPS=v2.0.0rc0
 RUN git clone https://github.com/NVIDIA/NeMo.git && \
     cd NeMo && \
-    git config user.email "email@email.com" && \
-    git config user.name "name name" && \
+    git checkout ${NEMO_REVISION_DEPS} && \
+    echo NEMO_DEPS_COMMIT_HASH=$(git rev-parse HEAD) && \
+    pip uninstall -y nemo-toolkit && \
+    pip install pkgconfig py-cpuinfo "cython<3.0.0" && \
+    pip install --no-build-isolation -e ".[nlp]" && \
+    echo NEMO_REVISION=${NEMO_REVISION} && \
     git checkout ${NEMO_REVISION} && \
     echo NEMO_COMMIT_HASH=$(git rev-parse HEAD) && \
-    bash reinstall.sh
+    pip install --no-build-isolation --no-deps -e ".[nlp]"
 
+# Build NeMo (has to be called after all changes to repo)
+RUN cd NeMo && \
+      cd nemo/collections/nlp/data/language_modeling/megatron && \
+      make
+
+ENV PYTHONPATH "/workspace/NeMo:${PYTHONPATH}"
+
+# Same trick as for nemo, complaint about incompatible versions that are targeting the same commit.
 ARG MEGATRON_REVISION=core_v0.7.0.beta
 RUN pip uninstall -y megatron-core && \
     git clone https://github.com/NVIDIA/Megatron-LM.git && \
@@ -38,9 +79,11 @@ RUN pip uninstall -y megatron-core && \
     pip install . && \
     cd megatron/core/datasets && \
     make
-ENV PYTHONPATH "${PYTHONPATH}:/workspace/megatron-lm"
+ENV PYTHONPATH "${PYTHONPATH}:/workspace/Megatron-LM"
 
-ARG TE_REVISION=v1.6rc1
+## 2. Transformer Engine +fix for arm64
+#ARG TE_REVISION=3b4d9e8766b829d50ac78bb26f770fb8d9825ae7 # v1.6rc1
+ARG TE_REVISION=868c7d301bc2f61ec077884895999569b258f867
 RUN if [ "${TE_REVISION}" != SKIP ]; then \
       NVTE_WITH_USERBUFFERS=1 MPI_HOME=/usr/local/mpi pip install --force-reinstall --no-deps git+https://github.com/NVIDIA/TransformerEngine.git@${TE_REVISION} \
     ; fi
@@ -52,12 +95,14 @@ RUN git clone https://github.com/NVIDIA/apex.git && \
     git checkout ${APEX_REVISION} && \
     CFLAGS="-g0" NVCC_APPEND_FLAGS="--threads 8" pip install -v --no-build-isolation --no-cache-dir --disable-pip-version-check --config-settings "--build-option=--cpp_ext --cuda_ext --bnp --xentropy --deprecated_fused_adam --deprecated_fused_lamb --fast_multihead_attn --distributed_lamb --fast_layer_norm --transducer --distributed_adam --fmha --fast_bottleneck --nccl_p2p --peer_memory --permutation_search --focal_loss --fused_conv_bias_relu --index_mul_2d --cudnn_gbn --group_norm --gpu_direct_storage" . && \
     rm -rf build
+ENV PYTHONPATH "/workspace/apex:${PYTHONPATH}"
 
 # Set working directory
 WORKDIR /workspace/sd
 
 # Copy code
 COPY . .
+ENV PYTHONPATH "/workspace/sd:${PYTHONPATH}"
 
 # install LDM
 RUN pip install -r requirements.txt
