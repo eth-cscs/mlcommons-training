@@ -19,6 +19,9 @@ set -e
 
 [ "${DEBUG}" = "1" ] && set -x
 
+hostname
+ulimit -c 0  # Disable core file creation
+
 # Vars without defaults
 : "${SEED:?SEED not set}"
 : "${WALLTIME:=?WALLTIME not set}"
@@ -154,13 +157,14 @@ if [[ "${ENABLE_CPU_EXCLUSIVE:-1}" == "1" ]]; then
     CPU_EXCLUSIVE='--cpu=exclusive'
 fi
 
-if [[ -n "${SLURM_LOCALID-}" ]] && [[ "${SLURM_NTASKS}" -gt "${SLURM_JOB_NUM_NODES}" ]]; then
-    # Mode 1: Slurm launched a task for each GPU and set some envvars
-    CMD=( 'bindpcie' ${CPU_EXCLUSIVE} ${IB_BIND} '--' ${NSYSCMD} 'python' '-u')
-else
-    # interactive run on single node, no need to bind
-    CMD=( ${NSYSCMD} 'torchrun' '--nproc_per_node=8' )
-fi
+# if [[ -n "${SLURM_LOCALID-}" ]] && [[ "${SLURM_NTASKS}" -gt "${SLURM_JOB_NUM_NODES}" ]]; then
+#     # Mode 1: Slurm launched a task for each GPU and set some envvars
+#     CMD=( 'bindpcie' ${CPU_EXCLUSIVE} ${IB_BIND} '--' ${NSYSCMD} 'python' '-u')
+# else
+#     # interactive run on single node, no need to bind
+#     CMD=( ${NSYSCMD} 'torchrun' '--nproc_per_node=8' )
+# fi
+CMD=( ${NSYSCMD} 'python' '-u' )
 
 if [ "$LOGGER" = "apiLog.sh" ];
 then
