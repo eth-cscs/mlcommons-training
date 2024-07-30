@@ -18,9 +18,22 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-
 ARG FROM_IMAGE_NAME=nvcr.io/nvidia/pytorch:24.04-py3
 FROM ${FROM_IMAGE_NAME}
+
+RUN apt-get update \
+  && apt-get install -yqq --no-install-recommends openssh-server \
+  && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /run/sshd
+
+RUN pip install -vvv \
+  git+https://github.com/mlcommons/logging.git@4.0.0-rc2 \
+  git+https://github.com/NVIDIA/mlperf-common.git@68cf1d0d5e3de3351e66abb696d0e2d011aabf47 \
+  zarr
+
+# NeMo dependencies
+RUN pip install -vvv tensorstore==0.1.45
+RUN pip install -vvv causal-conv1d==1.2.0.post2 opencc-python-reimplemented==0.1.7
 
 # Document build setup
 ARG FROM_IMAGE_NAME
@@ -43,15 +56,15 @@ RUN if [ "${APEX_REVISION}" != SKIP ]; then \
       MAX_JOBS=${APEX_MAX_JOBS} NVCC_APPEND_FLAGS="--threads 8" pip install -v --no-build-isolation --no-cache-dir --disable-pip-version-check --config-settings "--build-option=--cpp_ext --cuda_ext --bnp --xentropy --deprecated_fused_adam --deprecated_fused_lamb --fast_multihead_attn --distributed_lamb --fast_layer_norm --transducer --distributed_adam --fmha --fast_bottleneck --nccl_p2p --peer_memory --permutation_search --focal_loss --fused_conv_bias_relu --index_mul_2d --cudnn_gbn --group_norm" . \
     ; fi
 
-## 2. Transformer Engine
-ARG TE_REVISION=v1.6rc1
+## 2. Transformer Engine +fix for arm64
+ARG TE_REVISION=3b4d9e8766b829d50ac78bb26f770fb8d9825ae7 # v1.6rc1
 ENV CUSTOM_TE_REVISION ${TE_REVISION}
 
 RUN if [ "${TE_REVISION}" != SKIP ]; then \
       NVTE_WITH_USERBUFFERS=1 MPI_HOME=/usr/local/mpi pip install --force-reinstall --no-deps git+https://github.com/NVIDIA/TransformerEngine.git@${TE_REVISION} \
     ; fi
 
-## 3. NeMo
+## 3. NeMo v2.0.0.rc0.beta doesn't install on aarch64, but v2.0.0rc0 does
 ARG NEMO_REVISION=v2.0.0.rc0.beta
 ENV CUSTOM_NEMO_REVISION ${NEMO_REVISION}
 ARG NEMO_BASE_VERSION=r2.0.0
@@ -69,13 +82,16 @@ RUN if [ "${NEMO_REVISION}" == SKIP ]; then \
       git clone https://github.com/NVIDIA/NeMo.git && \
       cd NeMo && \
       git config user.email "email@email.com" && \
-      git config user.name "name name" && \  
+      git config user.name "name name" && \
+      git checkout v2.0.0rc0 && \
+      echo NEMO_COMMIT_HASH=$(git rev-parse HEAD) && \
+      pip uninstall -y nemo-toolkit && \
+      pip install pkgconfig py-cpuinfo "cython<3.0.0" && \
+      pip install --no-build-isolation -e ".[nlp]" && \
       echo NEMO_REVISION=${NEMO_REVISION} && \
       git checkout ${NEMO_REVISION} && \
       echo NEMO_COMMIT_HASH=$(git rev-parse HEAD) && \
-      pip uninstall -y nemo-toolkit && \
-      pip install "cython<3.0.0" && \
-      pip install --no-build-isolation -e ".[nlp]" \
+      pip install --no-build-isolation --no-deps -e ".[nlp]" \
     ; fi
 
 ### Make (has to be called after all changes to repo)
@@ -103,26 +119,25 @@ RUN if [ "${MEGATRON_REVISION}" != SKIP ]; then \
 ENV PYTHONPATH "${PYTHONPATH}:/workspace/Megatron-LM"
 
 # Pin PL version
-# RUN pip install --force-reinstall --no-deps pytorch-lightning==2.0.7
+RUN pip install --force-reinstall --no-deps pytorch-lightning==2.2.4
 
-## 5. Benchmark dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# # 5. Benchmark dependencies
+# COPY requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
 
 ## 6. Use nccl-rdma-sharp-plugins from master to pick a fix after HPCX2.18 release
-RUN rm -rf /opt/hpcx/nccl_rdma_sharp_plugin && \
-    ln -s /usr/lib/x86_64-linux-gnu/libibverbs.so.1 /usr/lib/x86_64-linux-gnu/libibverbs.so && \
-    git clone https://github.com/Mellanox/nccl-rdma-sharp-plugins && \
-    cd nccl-rdma-sharp-plugins/ && \
-    ./autogen.sh && \
-    ./configure --prefix=/opt/hpcx/nccl_rdma_sharp_plugin --with-cuda=/usr/local/cuda --with-sharp=/opt/hpcx/sharp/ && \
-    make -j install && \
-    cd ../ && \
-    rm -rf nccl-rdma-sharp-plugins/
+#RUN rm -rf /opt/hpcx/nccl_rdma_sharp_plugin && \
+#    ln -s /usr/lib/x86_64-linux-gnu/libibverbs.so.1 /usr/lib/x86_64-linux-gnu/libibverbs.so && \
+#    git clone https://github.com/Mellanox/nccl-rdma-sharp-plugins && \
+#    cd nccl-rdma-sharp-plugins/ && \
+#    ./autogen.sh && \
+#    ./configure --prefix=/opt/hpcx/nccl_rdma_sharp_plugin --with-cuda=/usr/local/cuda --with-sharp=/opt/hpcx/sharp/ && \
+#    make -j install && \
+#    cd ../ && \
+#    rm -rf nccl-rdma-sharp-plugins/
 
 # Benchmark code
 WORKDIR /workspace/llm
 
 COPY . .
 ENV PYTHONPATH "/workspace/llm:/workspace/NeMo:${PYTHONPATH}"
-

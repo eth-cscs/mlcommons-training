@@ -1,0 +1,21 @@
+image = "/iopsstor/scratch/cscs/dealmeih/images/mlperf-training-v4.0-nvidia-gpt3-24.04.pl224.sqsh"
+# image = "/iopsstor/scratch/cscs/dealmeih/images/mlperf-training-v4.0-nvidia-gpt3-24.06.sqsh"
+
+mounts = ["/capstor", "/iopsstor", "/users"]
+
+writable = true
+
+[annotations]
+com.hooks.aws_ofi_nccl.enabled = "true"
+com.hooks.aws_ofi_nccl.variant = "cuda12"
+com.hooks.dcgm.enabled = "true"
+
+[env]
+FI_CXI_DISABLE_HOST_REGISTER = "1"
+FI_MR_CACHE_MONITOR = "userfaultfd"
+FI_CXI_DEFAULT_CQ_SIZE = "131072"
+FI_CXI_DEFAULT_TX_SIZE = "256"
+NCCL_CROSS_NIC = "1"
+# NCCL_IGNORE_CPU_AFFINITY = "1"
+NCCL_DEBUG = "WARN"
+# NCCL_DEBUG_SUBSYS = "INIT,TUNING"

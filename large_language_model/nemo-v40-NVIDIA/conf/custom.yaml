@@ -7,7 +7,7 @@ proxy_gbs: ${oc.decode:${oc.env:PROXY_GBS,${model.global_batch_size}}}
 is_proxy_run: ${neq:${proxy_gbs},${model.global_batch_size}}
 
 trainer:
-  devices: ${oc.decode:${oc.env:DGXNGPU,8}}
+  devices: ${oc.decode:${oc.env:DGXNGPU,4}}
   num_nodes: ${oc.decode:${oc.env:DGXNNODES,1}}
   precision: bf16
   max_steps: ${oc.decode:${oc.env:MAX_STEPS,${if:${is_proxy_run},${oc.decode:${oc.env:LIMIT_TRAIN_BATCHES,500}},${ceil_div:20000000,${proxy_gbs}}}}}
