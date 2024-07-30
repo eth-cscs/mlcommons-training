@@ -14,12 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#SBATCH --exclusive
+#SBATCH --mem=0
 #SBATCH --no-requeue
 #SBATCH --nodes=128
 #SBATCH --job-name=mlperf-nv-gpt3
 #SBATCH --time=2:00:00
 #SBATCH --output=logs/slurm-%j.out
 #SBATCH --account=csstaff
+#SBATCH --reservation=todi
 
 set -eux
 
@@ -53,14 +56,14 @@ export HF_HOME="$SCRATCH/huggingface"
 export MASTER_PORT=29500
 export DGXNGPU=4
 
-export DEBUG=1
+# export DEBUG=1
 export HYDRA_FULL_ERROR=1
 export USE_DATETIME=1
 
 # Vars with defaults
 # : "${TENSOR_MODEL_PARALLEL:=1}"
 # : "${PIPELINE_MODEL_PARALLEL:=1}"
-: "${LOAD_CHECKPOINTS_PATH:=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm/ckpt4000-consumed_samples}"
+: "${LOAD_CHECKPOINTS_PATH:=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/megatron-lm}"
 : "${MLPERF_RULESET:=4.0.0}"
 : "${MLPERF_SYSTEM_NAME:='unknown'}"
 : "${CHECK_COMPLIANCE:=1}"
@@ -393,7 +396,8 @@ else
   hang_monitor_pid=
 fi
 
-env > ${LOG_FILE_BASE}_env.log
+# Log hostnames for all ranks
+srun -l hostname
 
 # Run experiments
 for _experiment_index in $(seq -w 1 "${NEXP}"); do
@@ -402,7 +406,7 @@ for _experiment_index in $(seq -w 1 "${NEXP}"); do
         echo ":::DLPAL ${CONT} ${SLURM_JOB_ID} ${SLURM_JOB_NUM_NODES} ${SLURM_JOB_NODELIST} ${MLPERF_CLUSTER_NAME} ${DGXSYSTEM}"
 
         # Print system info
-        echo ":::SYSJSON $(srun --ntasks=1 --environment="${CONT_FILE}" mlperf-sysjson.sh)"
+        echo ":::SYSJSON $(srun -n1 -N1 --environment="${CONT_FILE}" mlperf-sysjson.sh)"
 
         export SEED=$(($SEED_BASE - 1 + 10#$_experiment_index))  # `10#` makes sure we interpret number in base 10
 

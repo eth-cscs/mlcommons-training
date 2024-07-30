@@ -19,9 +19,6 @@ set -e
 
 [ "${DEBUG}" = "1" ] && set -x
 
-hostname
-ulimit -c 0  # Disable core file creation
-
 # Vars without defaults
 : "${SEED:?SEED not set}"
 : "${WALLTIME:=?WALLTIME not set}"
