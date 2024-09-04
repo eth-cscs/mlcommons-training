@@ -1,8 +1,7 @@
 image = "/bret/scratch/cscs/lukasd/images/ngc-recommendation_v2+24.03.sqsh"
 
 mounts = [
-  "/bret:/bret",
-  "/mchstor2:/mchstor2",
+  "/capstor/scratch/cscs",
   "/etc/slurm:/etc/slurm",
   "/users/lukasd/.ssh/cscs-key.pub:/users/lukasd/.ssh/authorized_keys",
   "/users/lukasd/.vscode-server:/users/lukasd/.vscode-server",
