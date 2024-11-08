@@ -14,7 +14,7 @@ MATERIALIZED_DATASET_PATH=${DATA_DIR}/synthetic_multihot
 mkdir -p logs ${MATERIALIZED_DATASET_PATH}
 
 set -x
-srun -ul --wait=0 --environment=$(realpath env/ngc-recommendation_v2-24.03.toml) bash -c "\
+srun -ul --wait=0 --container-workdir=$(pwd) --environment=$(realpath env/ngc-recommendation_v2-24.03.toml) bash -c "\
 cd scripts && \
 python materialize_synthetic_multihot_dataset.py \
     --in_memory_binary_criteo_path $PREPROCESSED_CRITEO_1TB_CLICK_LOGS_DATASET_PATH \

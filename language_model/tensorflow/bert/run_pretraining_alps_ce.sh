@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name mlperf-bert
-#SBATCH --time 24:00:00
+#SBATCH --time 2:00:00
 #SBATCH --nodes 2
 #SBATCH --ntasks-per-node 1
 #SBATCH --output logs/slurm-%x.%j.out
@@ -22,7 +22,7 @@ else
 fi
 
 set -x
-srun -ul --mpi=pmi2 --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" ${ENROOT_ENTRYPOINT} bash -c "
+srun -ul --mpi=pmi2 --container-workdir=$(pwd) --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" ${ENROOT_ENTRYPOINT} bash -c "
   hostname
   unset http_proxy https_proxy && \
   CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \

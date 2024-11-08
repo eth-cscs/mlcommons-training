@@ -13,7 +13,7 @@ mkdir -p logs
 DATASET_DIR="/capstor/scratch/cscs/dealmeih/ds/mlperf/data/language_model_bert"
 
 set -x
-srun -u --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" bash -c "
+srun -u --container-workdir=$(pwd) --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" bash -c "
   export CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID
 
   # Generate one TFRecord for each part-00XXX-of-00500 file. The following command is for generating one corresponding TFRecord

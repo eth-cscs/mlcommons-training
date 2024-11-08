@@ -4,4 +4,4 @@
 #SBATCH --time 24:00:00
 #SBATCH --output logs/slurm-%x.%j.out
 
-srun --environment=$(realpath env/ngc-rnn_speech_recognition-24.03.toml) scripts/preprocess_librispeech.sh
+srun --container-workdir=$(pwd) --environment=$(realpath env/ngc-rnn_speech_recognition-24.03.toml) scripts/preprocess_librispeech.sh

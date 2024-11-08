@@ -4,6 +4,7 @@
 #SBATCH --time 00:30:00
 #SBATCH --nodes 1
 #SBATCH --ntasks-per-node 4
+#SBATCH --gpus-per-task 1
 #SBATCH --output logs/slurm-%j.out
 
 set -e
@@ -44,15 +45,14 @@ then
     echo "STARTING TIMING RUN AT $start_fmt"
 
 # CLEAR YOUR CACHE HERE
-  srun -u -n 1 --environment="$(realpath env/ngc-image_segmentation-24.03.toml)" python -c "
+  srun -u -n 1 --container-workdir=$(pwd) --environment="$(realpath env/ngc-image_segmentation-24.03.toml)" python -c "
 from mlperf_logging.mllog import constants
 from runtime.logging import mllog_event
 mllog_event(key=constants.CACHE_CLEAR, value=True)"
 
-  srun -ul --environment="$(realpath env/ngc-image_segmentation-24.03.toml)" ${ENROOT_ENTRYPOINT} \
+  srun -ul --container-workdir=$(pwd) --environment="$(realpath env/ngc-image_segmentation-24.03.toml)" ${ENROOT_ENTRYPOINT} \
 bash -c "\
 hostname
-CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
 RANK=\$SLURM_PROCID \
 WORLD_SIZE=\$SLURM_NTASKS \
 LOCAL_RANK=\$SLURM_LOCALID \

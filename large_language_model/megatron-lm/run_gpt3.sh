@@ -139,7 +139,7 @@ run_cmd="RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$S
 DATETIME=`date +'date_%y-%m-%d_time_%H-%M-%S'`
 
 # export TORCH_NCCL_BLOCKING_WAIT=1
-srun -ul --environment="$(realpath env/ngc-megatron-24.03.toml)" \
+srun -ul --container-workdir=$(pwd) --environment="$(realpath env/ngc-megatron-24.03.toml)" \
   --output=$LOG_DIR/GPT3-175B-runlog-$SLURM_JOB_ID-$DATETIME.log ${ENROOT_ENTRYPOINT} sh -c "
   hostname
   ${run_cmd}

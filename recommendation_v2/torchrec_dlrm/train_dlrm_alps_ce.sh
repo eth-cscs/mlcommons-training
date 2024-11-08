@@ -43,7 +43,7 @@ fi
 
 set -x
 # Launch benchmark
-srun -ul --environment="$(realpath env/ngc-recommendation_v2-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "
+srun -ul --container-workdir=$(pwd) --environment="$(realpath env/ngc-recommendation_v2-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "
 hostname
 RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=0,1,2,3 \
 python dlrm_main.py \

@@ -4,6 +4,7 @@
 #SBATCH --time 02:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
+#SBATCH --gpus-per-task 1
 #SBATCH --output logs/slurm-%x.%j.out
 
 DATA_DIR=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification/tfrecords/ILSVRC/Data/CLS-LOC
@@ -21,11 +22,10 @@ else
     ENROOT_ENTRYPOINT=""
 fi
 
-srun -ul --mpi=pmi2 --environment="$(realpath env/ngc-image_classification-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "
+srun -ul --mpi=pmi2 --container-workdir=$(pwd) --environment="$(realpath env/ngc-image_classification-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "
 hostname
 cd tensorflow2 && \
 unset http_proxy https_proxy && \
-CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
 python3 ./resnet_ctl_imagenet_main.py \
 --base_learning_rate=8.5 \
 --batch_size=1024 \

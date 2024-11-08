@@ -4,6 +4,7 @@
 #SBATCH --time=02:00:00
 #SBATCH --nodes=2
 #SBATCH --ntasks-per-node=2
+#SBATCH --gpus-per-task=1
 
 mkdir -p logs
 
@@ -24,10 +25,10 @@ else
 fi
 
 set -x
-srun -ul --environment="$(realpath env/ngc-object_detection-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "\
+srun -ul --container-workdir=$(pwd) --environment="$(realpath env/ngc-object_detection-24.03.toml)" ${ENROOT_ENTRYPOINT} bash -c "\
   hostname
   if [ \"\$SLURM_LOCALID\" -eq 0 ]; then
     cp pytorch/maskrcnn_benchmark/config/paths_catalog.py /usr/local/lib/python3.10/dist-packages/maskrcnn_benchmark/config/
   fi
-  RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID ./run_and_time.sh
+  RANK=\$SLURM_PROCID LOCAL_RANK=\$SLURM_LOCALID ./run_and_time.sh
 "

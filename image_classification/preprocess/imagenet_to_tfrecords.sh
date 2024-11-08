@@ -7,7 +7,7 @@
 DATA_DIR=/capstor/scratch/cscs/dealmeih/ds/mlperf/data/image_classification
 
 # `local_scratch_dir` will be where the TFRecords are stored.`
-srun -u --environment="$(realpath env/ngc-image_classification-24.03.toml)" bash -c "
+srun -u --container-workdir=$(pwd) --environment="$(realpath env/ngc-image_classification-24.03.toml)" bash -c "
 cd preprocess && \
 python imagenet_to_gcs.py \
   --raw_data_dir=${DATA_DIR}/ \
