@@ -542,7 +542,7 @@ def main(_):
         allow_soft_placement=True)
 
     distribution_strategy = distribution_utils.get_distribution_strategy(
-        distribution_strategy="multi_worker_mirrored",
+        distribution_strategy="mirrored",  # multi_worker_mirrored not working with SLURM (invalid device specification for TensorSliceDataset)
         num_gpus=FLAGS.num_gpus,
         all_reduce_alg="nccl",
         num_packs=0)

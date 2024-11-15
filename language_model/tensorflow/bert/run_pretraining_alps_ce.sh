@@ -2,8 +2,9 @@
 
 #SBATCH --job-name mlperf-bert
 #SBATCH --time 2:00:00
-#SBATCH --nodes 2
-#SBATCH --ntasks-per-node 1
+#SBATCH --nodes 1
+#SBATCH --ntasks-per-node 4
+#SBATCH --gpus-per-task 1
 #SBATCH --output logs/slurm-%x.%j.out
 
 set -e
@@ -25,7 +26,6 @@ set -x
 srun -ul --mpi=pmi2 --container-workdir=$(pwd) --environment="$(realpath env/ngc-language_model_bert-24.04.toml)" ${ENROOT_ENTRYPOINT} bash -c "
   hostname
   unset http_proxy https_proxy && \
-  CUDA_VISIBLE_DEVICES=\$SLURM_LOCALID \
   TF_XLA_FLAGS='--tf_xla_auto_jit=2' \
   python run_pretraining.py \
     --bert_config_file=${DATASET_DIR}/input_files/bert_config.json \

@@ -121,9 +121,7 @@ def get_distribution_strategy(distribution_strategy="mirrored",
     return tf.distribute.experimental.TPUStrategy(cluster_resolver)
 
   if distribution_strategy == "multi_worker_mirrored":
-    cluster_resolver = tf.distribute.cluster_resolver.SlurmClusterResolver(port_base=15000)
     return tf.distribute.experimental.MultiWorkerMirroredStrategy(
-        cluster_resolver=cluster_resolver,
         communication=_collective_communication(all_reduce_alg))
 
   if distribution_strategy == "one_device":
